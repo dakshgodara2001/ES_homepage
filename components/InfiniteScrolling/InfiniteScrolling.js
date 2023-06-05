@@ -1,67 +1,41 @@
-import React from 'react'
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 const InfiniteScrolling = ({
   dataArrayList,
   children,
-  observerOptions,
-  dataDisplayLimit
+  observerOptions = {},
+  dataDisplayLimit = 10
 }) => {
-	
-	const [callback, setCallback] = useState({});
-	const [itemList, setItemList] = useState([]);
-	const [skip, setSkip] = useState(0);
-	const [limit, setLimit] = useState(dataDisplayLimit);
-	const [loaderElem, setLoaderElem] = useState(null)
-	let observer = useRef()
+  const [itemList, setItemList] = useState([]);
+  const [skip, setSkip] = useState(0);
+  const loaderElemRef = useRef();
 
-	const setItems = (skipCount, limitCount) => {
-    const tempItemList = [...itemList]
-    for (let index = skipCount; index < limitCount; index++) {
-      tempItemList.push(dataArrayList[index])
+  useEffect(() => {
+    const fetchItems = (start, end) => dataArrayList.slice(start, end);
+    const newItems = fetchItems(skip, skip + dataDisplayLimit);
+    setItemList((prev) => [...prev, ...newItems]);
+  }, [skip, dataDisplayLimit, dataArrayList]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setSkip((prev) => prev + dataDisplayLimit);
+      }
+    }, { ...observerOptions });
+
+    if (loaderElemRef.current) {
+      observer.observe(loaderElemRef.current);
     }
-    setItemList(tempItemList)
-  }
 
-	useEffect(() => {
-		setItems(skip, limit)
-	}, [skip, limit])
-	
-	useEffect(() => {
-		observer.current = new IntersectionObserver(([entry]) => { setCallback(entry) }, 
-		{ rootMargin: '1px', threshold : 1, ...observerOptions})
-		const currentElem = loaderElem;
-		const currentObserver = observer.current;
-		
-		if(currentElem){
-			currentObserver.observe(currentElem);
-		}
+    return () => observer.disconnect();
+  }, [dataDisplayLimit, observerOptions]);
 
-		return () => {
-			if(currentElem){
-				currentObserver.unobserve(currentElem);
-			}
-		}
-	}, [loaderElem])
-
-	useEffect(() => {
-		if(callback && callback.isIntersecting){
-			const newPage = skip + dataDisplayLimit;
-			const newLimit = newPage + dataDisplayLimit;
-			console.log('limt ', newLimit, dataArrayList.length)
-			if(newLimit <= dataArrayList.length){
-				setSkip(newPage);
-				setLimit(newLimit);
-			}
-		}
-	}, [callback])
-
-	return (
-		<div>
-			<div className="infinite-scrolling">{children({ modifiedDataArrayList : itemList })}</div>
-			<div ref={setLoaderElem}></div>
-		</div>
-	)
+  return (
+    <div>
+      <div className="infinite-scrolling">{children({ modifiedDataArrayList : itemList })}</div>
+      <div ref={loaderElemRef}></div>
+    </div>
+  )
 }
 
-export default InfiniteScrolling
+export default InfiniteScrolling;
