@@ -1,57 +1,56 @@
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    background-color: #fff;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+
+  @media only screen and (max-width: 768px) {
+    padding: 0.5rem;
+  }
+
+  &__logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+
     @media only screen and (max-width: 768px) {
-      padding: 0.5rem;
+      font-size: 1.2rem;
     }
-  
-    &__logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-  
-      @media only screen and (max-width: 768px) {
-        font-size: 1.2rem;
-      }
-    }
-  
-    &__menu {
-      display: flex;
-  
-      @media only screen and (max-width: 768px) {
-        display: none;
-      }
-  
-      &__menuItem {
-        margin-right: 1rem;
-        cursor: pointer;
-  
-        &:last-child {
-          margin-right: 0;
-        }
-      }
-    }
-  
-    &__toggle {
+  }
+
+  &__menu {
+    display: flex;
+
+    @media only screen and (max-width: 768px) {
       display: none;
+    }
+
+    &__menuItem {
+      margin-right: 1rem;
       cursor: pointer;
-  
-      @media only screen and (max-width: 768px) {
-        display: flex;
-      }
-  
-      & span {
-        width: 25px;
-        height: 3px;
-        background-color: black;
-        margin: 5px;
+
+      &:last-child {
+        margin-right: 0;
       }
     }
   }
-  
+
+  &__toggle {
+    display: none;
+    cursor: pointer;
+
+    @media only screen and (max-width: 768px) {
+      display: flex;
+    }
+
+    & span {
+      width: 25px;
+      height: 3px;
+      background-color: black;
+      margin: 5px;
+    }
+  }
+}
