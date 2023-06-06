@@ -13,7 +13,7 @@ export default function Home({ data }) {
 				{({ modifiedDataArrayList }) => {
 					return modifiedDataArrayList.map((article, index) => {
 						return (
-              <div key={article.id}>
+              <div key={index}>
               <img src={`${article.avatar}?unique=${article.id}`} alt={article.title} />
               <h2>{article.title}</h2>
               <h4>{article.contentSnippet}</h4>
