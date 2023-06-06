@@ -1,25 +1,28 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useInfiniteQuery } from 'react-query';
+import { fetchAPI } from '../fetchAPI/fetchAPI';
 
 const InfiniteScrolling = ({
-  dataArrayList,
   children,
-  observerOptions = {},
-  dataDisplayLimit = 10
+  observerOptions = {}
 }) => {
-  const [itemList, setItemList] = useState([]);
-  const [skip, setSkip] = useState(0);
   const loaderElemRef = useRef();
-
-  useEffect(() => {
-    const fetchItems = (start, end) => dataArrayList.slice(start, end);
-    const newItems = fetchItems(skip, skip + dataDisplayLimit);
-    setItemList((prev) => [...prev, ...newItems]);
-  }, [skip, dataDisplayLimit, dataArrayList]);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    error
+  } = useInfiniteQuery('articles', fetchAPI, {
+    getNextPageParam: (lastPage) => lastPage.nextPage
+  });
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setSkip((prev) => prev + dataDisplayLimit);
+      if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
       }
     }, { ...observerOptions });
 
@@ -28,14 +31,26 @@ const InfiniteScrolling = ({
     }
 
     return () => observer.disconnect();
-  }, [dataDisplayLimit, observerOptions]);
+  }, [hasNextPage, isFetchingNextPage, observerOptions, fetchNextPage]);
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+  
+
+  if (isError) {
+    return <p>Error: {error.message}</p>;
+  }
 
   return (
     <div>
-      <div className="infinite-scrolling">{children({ modifiedDataArrayList : itemList })}</div>
+      <div className="infinite-scrolling">
+        {children({ modifiedDataArrayList : data.pages.flatMap(page => page.data) })}
+      </div>
       <div ref={loaderElemRef}></div>
     </div>
   )
 }
 
 export default InfiniteScrolling;
+
