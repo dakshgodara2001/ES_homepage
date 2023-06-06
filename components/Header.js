@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import headerLogo from '../assets/images/headerImage.webp';
+import headerLogo from '../assets/images/headerImage.png';
 
 function Header() {
     return (
