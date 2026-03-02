@@ -5,7 +5,10 @@ import headerLogo from '../assets/images/headerImage.png';
 function Header() {
     return (
         <div className="header">
-            <Image src={headerLogo} />
+            <div className="header__logo">
+                <Image src={headerLogo} alt="Header logo" width={40} height={40} />
+            </div>
+            <span className="header__title">ES // Articles</span>
         </div>
     );
 }

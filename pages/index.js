@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import Header from '../components/Header';
 import styles from '../styles/Home.module.scss'
 import InfiniteScrolling from '../components/InfiniteScrolling/InfiniteScrolling'
@@ -8,34 +9,36 @@ export default function Home({ data }) {
   return (
     <div className={styles.container}>
       <Header />
-      <ul className={styles.articles}>
-			<InfiniteScrolling dataArrayList={data} dataDisplayLimit={1}>
-				{({ modifiedDataArrayList }) => {
-					return modifiedDataArrayList.map((article, index) => {
-						return (
-              <div key={index}>
-              <img src={`${article.avatar}?unique=${article.id}`} alt={article.title} />
-              <h2>{article.title}</h2>
-              <h4>{article.contentSnippet}</h4>
-              <p>{article.pubDate}</p>
-              <hr />
-            </div>
+      <div className={styles.articles}>
+        <InfiniteScrolling initialData={data} styles={styles}>
+          {({ modifiedDataArrayList }) => {
+            return modifiedDataArrayList.map((article) => {
+              return (
+                <div key={article.id} className={styles.article}>
+                  <div className={styles.imageWrapper}>
+                    <Image src={`${article.avatar}?unique=${article.id}`} alt={article.title} width={720} height={400} />
+                  </div>
+                  <div className={styles.content}>
+                    <h2 className={styles.title}>{article.title}</h2>
+                    <p className={styles.snippet}>{article.contentSnippet}</p>
+                    <p className={styles.date}>{article.pubDate}</p>
+                  </div>
+                </div>
               )
-					})}
-				}
-			</InfiniteScrolling>
-		</ul>
+            })
+          }}
+        </InfiniteScrolling>
+      </div>
     </div>
   )
 }
 
 export async function getServerSideProps() {
-	try {
-		const data = await fetchAPI(1, 20);
-		return { props: { data } }
-	} catch (err) {
-		console.error(err);
-		return { props: { data: [] } }
-	}
+  try {
+    const data = await fetchAPI(1, 20);
+    return { props: { data } }
+  } catch (err) {
+    console.error(err);
+    return { props: { data: [] } }
+  }
 }
-

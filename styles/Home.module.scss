@@ -1,58 +1,199 @@
 .container {
-  max-width: 1200px;
+  max-width: 720px;
   margin: 0 auto;
-  padding: 20px;
-  
+  padding: 2rem 1.5rem;
+  min-height: 100vh;
+}
 
-  .dividerLine{
-  background-color: black;
-  height: 2px;
-  margin-bottom: 5px;
+.articles {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.article {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.5s ease-out both;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0, 212, 255, 0.25);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 0 20px var(--glow-cyan),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    background: var(--bg-card-hover);
   }
-  
+
+  .imageWrapper {
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(transparent, var(--bg-card));
+      pointer-events: none;
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+  }
+
+  &:hover .imageWrapper img {
+    transform: scale(1.03);
+  }
+
+  .content {
+    padding: 1.25rem 1.5rem 1.5rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    transition: color 0.2s ease;
+  }
+
+  &:hover .title {
+    color: var(--accent-cyan);
+  }
+
+  .snippet {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-cyan);
+    }
+  }
+}
+
+/* Loading state */
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent-cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loadingText {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* Error state */
+.error {
+  text-align: center;
+  padding: 3rem;
+  color: #ff4d6a;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  background: rgba(255, 77, 106, 0.05);
+  border: 1px solid rgba(255, 77, 106, 0.15);
+  border-radius: 12px;
+}
+
+/* Sentinel loader trigger */
+.sentinel {
+  height: 1px;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Stagger animation for cards */
+@for $i from 1 through 20 {
+  .article:nth-child(#{$i}) {
+    animation-delay: #{$i * 0.05}s;
+  }
+}
+
+/* Responsive */
+@media screen and (max-width: 600px) {
+  .container {
+    padding: 1rem;
+  }
 
   .articles {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    list-style: none;
-    padding: 10px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 500px;
-
-    
-
-      img {
-        width: 100%;
-        height: auto;
-        display: block;
-
-      }
-
-      h2 {
-        font-size: 1.5rem;
-        color: rgb(53, 53, 53);
-        margin: 10px 0;
-      }
-
-      h4 {
-        font-size: 1rem;
-        color: rgb(59, 59, 59);
-        margin: 10px 0;
-      }
-
-      p {
-        font-size: 0.8rem;
-        color: #666;
-        margin: 5px 0;
-      }
-    
+    gap: 1rem;
   }
 
-  @media screen and (max-width: 600px) {
-    .articles li {
-      width: 100%;
+  .article {
+    border-radius: 12px;
+
+    .content {
+      padding: 1rem 1.25rem 1.25rem;
+    }
+
+    .title {
+      font-size: 1.1rem;
     }
   }
 }

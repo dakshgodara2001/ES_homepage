@@ -1,12 +1,15 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { useInfiniteQuery } from 'react-query';
 import { fetchAPI } from '../fetchAPI/fetchAPI';
 
 const InfiniteScrolling = ({
   children,
-  observerOptions = {}
+  initialData,
+  styles,
+  observerOptions
 }) => {
   const loaderElemRef = useRef();
+  const stableObserverOptions = useMemo(() => observerOptions || {}, [observerOptions]);
   const {
     data,
     fetchNextPage,
@@ -16,7 +19,14 @@ const InfiniteScrolling = ({
     isError,
     error
   } = useInfiniteQuery('articles', fetchAPI, {
-    getNextPageParam: (lastPage) => lastPage.nextPage
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    ...(initialData && {
+      initialData: {
+        pages: [initialData],
+        pageParams: [1]
+      },
+      staleTime: 60 * 1000
+    })
   });
 
   useEffect(() => {
@@ -24,33 +34,40 @@ const InfiniteScrolling = ({
       if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
         fetchNextPage();
       }
-    }, { ...observerOptions });
+    }, stableObserverOptions);
 
     if (loaderElemRef.current) {
       observer.observe(loaderElemRef.current);
     }
 
     return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage, observerOptions, fetchNextPage]);
+  }, [hasNextPage, isFetchingNextPage, stableObserverOptions, fetchNextPage]);
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return (
+      <div className={styles?.loader}>
+        <div className={styles?.spinner}></div>
+        <span className={styles?.loadingText}>Loading articles...</span>
+      </div>
+    );
   }
-  
 
   if (isError) {
-    return <p>Error: {error.message}</p>;
+    return <div className={styles?.error}>Error: {error.message}</div>;
   }
 
   return (
     <div>
-      <div className="infinite-scrolling">
-        {children({ modifiedDataArrayList : data.pages.flatMap(page => page.data) })}
-      </div>
-      <div ref={loaderElemRef}></div>
+      {children({ modifiedDataArrayList: data.pages.flatMap(page => page.data) })}
+      {isFetchingNextPage && (
+        <div className={styles?.loader}>
+          <div className={styles?.spinner}></div>
+          <span className={styles?.loadingText}>Loading more...</span>
+        </div>
+      )}
+      <div ref={loaderElemRef} className={styles?.sentinel}></div>
     </div>
   )
 }
 
 export default InfiniteScrolling;
-

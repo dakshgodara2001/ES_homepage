@@ -2,55 +2,49 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
-  background-color: #fff;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  background: rgba(10, 10, 15, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 100;
+  border-bottom: 1px solid var(--border-color);
 
-  @media only screen and (max-width: 768px) {
-    padding: 0.5rem;
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--accent-gradient);
+    opacity: 0.4;
+  }
+
+  &__title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 600;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
   }
 
   &__logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-
-    @media only screen and (max-width: 768px) {
-      font-size: 1.2rem;
-    }
+    border-radius: 8px;
+    overflow: hidden;
   }
 
-  &__menu {
-    display: flex;
+  @media only screen and (max-width: 768px) {
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
 
-    @media only screen and (max-width: 768px) {
-      display: none;
-    }
-
-    &__menuItem {
-      margin-right: 1rem;
-      cursor: pointer;
-
-      &:last-child {
-        margin-right: 0;
-      }
-    }
-  }
-
-  &__toggle {
-    display: none;
-    cursor: pointer;
-
-    @media only screen and (max-width: 768px) {
-      display: flex;
-    }
-
-    & span {
-      width: 25px;
-      height: 3px;
-      background-color: black;
-      margin: 5px;
+    &__title {
+      font-size: 1rem;
     }
   }
 }
